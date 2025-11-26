@@ -4,7 +4,7 @@ from sqlmodel import SQLModel, create_engine, Session
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./inventrack.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://inventrack_nlic_user:DRgJVrODXtF7IukhbWiWxNGXqrdyI8P8@dpg-d4f6jhmuk2gs73f4p5u0-a.oregon-postgres.render.com/inventrack_nlic")
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
 engine = create_engine(DATABASE_URL, echo=False, connect_args=connect_args)

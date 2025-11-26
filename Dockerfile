@@ -1,18 +1,31 @@
+# Base de Python minimal
 FROM python:3.11-slim
+
+# Configuración recomendada
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Dependencias del sistema (compilación mínima); se puede ajustar según requirements
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    libpq-dev \
+    python3-dev \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Instalar dependencias de Python
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copiar el código de la app
+COPY app ./app
+# COPY docs ./docs
 
-# Dar permisos de ejecución al script
-RUN chmod +x start.sh
+# Exponer el puerto de la app
+EXPOSE 8000
 
-ENV PYTHONUNBUFFERED=1
-
-CMD ["./start.sh"]
-
+# Comando de arranque: Render inyecta $PORT
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
